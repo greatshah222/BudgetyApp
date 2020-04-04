@@ -63,7 +63,11 @@ var UIController = (function(){
         inputType: '.add__type',
         inputDescription : '.add__description',
         inputValue: '.add__value',
-        inputBtn:'.add__btn'
+        inputBtn:'.add__btn',
+        incomeContainer:'.income__list',
+        expensesContainer:'.expenses__list'
+
+
 
     }
 
@@ -73,9 +77,65 @@ var UIController = (function(){
             return {
             type: document.querySelector(DOMstrings.inputType).value , // will be either inc or exp
             description : document.querySelector(DOMstrings.inputDescription).value,
-            value :document.querySelector(DOMstrings.inputValue).value
+            value :parseFloat(document.querySelector(DOMstrings.inputValue).value)
             };
         },
+        addListItem : function(obj,type){
+            var html, newHtml,element;
+        // Create Html string with place holder text
+            
+            if(type === 'inc'){
+                element = DOMstrings.incomeContainer;
+                
+                html =  '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"> <div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div> </div>';
+} else if(type === 'exp'){
+        element = DOMstrings.expensesContainer;
+    
+     html =' <div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div>  <div class="right clearfix"><div class="item__value"> %value%</div> <div class="item__percentage">21%</div>  <div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div> </div> </div>'}
+            
+                                   
+                          
+                           
+                    
+                                   
+ // replace place holder test with actual data
+                 
+ newHtml = html.replace('%id%',obj.id);
+ newHtml = newHtml.replace('%description%',obj.description);
+ newHtml = newHtml.replace('%value%',obj.value);
+  
+ 
+ 
+ 
+ 
+ /// Insert the html into the dom
+ document.querySelector(element).insertAdjacentHTML('beforeend',newHtml)
+ ;
+ 
+ 
+ 
+},       
+
+clearFields : function(){
+    var fields, fieldsArr;
+    
+    // querySelectorall returns us a list instead of an array. List is similar to an array but we need to convert to an array. we can do it by using slice method.we cannot pass directly slice to our list method since it is not an array so we use the prototype properties 
+        fields =  document.querySelectorAll(DOMstrings.inputDescription + ',' + DOMstrings.inputValue);
+        // Array is the function constructor for all array
+         fieldsArr = Array.prototype.slice.call(fields);
+    // name.foreach(callback function and it can receive upto 3 element(element intself in the array,index value of the array ,array)
+    fieldsArr.forEach(function(current , index, array){
+        current.value = "";
+        
+        
+    });
+    
+    fieldsArr[0].focus();
+    
+},
+
+           
+
         getDOMstrings : function(){
             return DOMstrings;
 
@@ -106,16 +166,33 @@ var controller =(function(budgetCtrl,UIctrl){
 
     };
 
+    var updateBudget = function(){
+
+    // calculate the budget
+    // return the budget
+    // display the budget on UI
+
+
+    };
+
 
     var ctrlAddItem = function(){
     // get the input field data
     var input = UIctrl.getInput();
-    // add the item to the budget controller
-     var newItem = budgetCtrl.addItem(input.type,input.description,input.value);
-    // add the item to the UI
-    // calculate the budget
-    // display the budget on UI
 
+    if(input.description !== "" && (input.value >0 && !isNaN(input.value)))
+    // add the item to the budget controller
+    {
+    var newItem = budgetCtrl.addItem(input.type,input.description,input.value);
+    // add the item to the UI
+        UIctrl.addListItem(newItem,input.type);
+        // clear the fiels
+        UIctrl.clearFields();
+        // calculate and update budget
+        updateBudget();
+    }
+
+    
  };
  return {
      init: function(){
